@@ -124,6 +124,7 @@ namespace SongRequestManagerV2.Views
         {
             this._bot.ChangeButtonColor += this.SetButtonColor;
             this._bot.RefreshListRequest += this.RefreshListRequest;
+            this._bot.AutoPlaySongRequested += this.PlaySongRequest;
             RequestBotConfig.Instance.ConfigChangedEvent += this.OnConfigChangedEvent;
             this._requestFlow.QueueStatusChanged += this.ChangeButtonText;
             this._requestFlow.PlayProcessEvent += this.ProcessSongRequest;
@@ -176,6 +177,7 @@ namespace SongRequestManagerV2.Views
             Logger.Debug("OnDestroy");
             this._bot.ChangeButtonColor -= this.SetButtonColor;
             this._bot.RefreshListRequest -= this.RefreshListRequest;
+            this._bot.AutoPlaySongRequested -= this.PlaySongRequest;
             RequestBotConfig.Instance.ConfigChangedEvent -= this.OnConfigChangedEvent;
             this._requestFlow.PlayProcessEvent -= this.ProcessSongRequest;
             this.DownloadProgress.ProgressChanged -= this.Progress_ProgressChanged;
@@ -281,6 +283,14 @@ namespace SongRequestManagerV2.Views
             finally {
                 _ = s_downloadSemaphore.Release();
             }
+        }
+
+        public void PlaySongRequest(SongRequest request)
+        {
+            if (this._isInGame) {
+                return;
+            }
+            Dispatcher.RunOnMainThread(() => this.ProcessSongRequest(request, false));
         }
 
         private string CreateSongDirectory(SongRequest request)

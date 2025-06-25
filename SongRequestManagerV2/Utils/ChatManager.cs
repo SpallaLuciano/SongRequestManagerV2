@@ -32,16 +32,24 @@ namespace SongRequestManagerV2.Utils
         public void Initialize()
         {
             Logger.Debug("Initialize call");
+            Logger.Debug($"TwitchIntegration={RequestBotConfig.Instance.EnableTwitchIntegration}, StreamerBot={RequestBotConfig.Instance.EnableStreamerBot}");
             try {
-                this.CoreInstance = CatCoreInstance.Create();
-                this.MultiplexerInstance = this.CoreInstance.RunAllServices();
-                this.MultiplexerInstance.OnTextMessageReceived += this.MultiplexerInstance_OnTextMessageReceived;
-                this.MultiplexerInstance.OnChatConnected += this.MultiplexerInstance_OnChatConnected;
-                this.TwitchService = this.MultiplexerInstance.GetTwitchPlatformService();
-                this.TwitchChannelManagementService = this.TwitchService?.GetChannelManagementService();
-                this.TwitchUserStateTrackerService = this.TwitchService?.GetUserStateTrackerService();
+                if (RequestBotConfig.Instance.EnableTwitchIntegration) {
+                    Logger.Info("Initializing CatCore for Twitch integration");
+                    this.CoreInstance = CatCoreInstance.Create();
+                    this.MultiplexerInstance = this.CoreInstance.RunAllServices();
+                    this.MultiplexerInstance.OnTextMessageReceived += this.MultiplexerInstance_OnTextMessageReceived;
+                    this.MultiplexerInstance.OnChatConnected += this.MultiplexerInstance_OnChatConnected;
+                    this.TwitchService = this.MultiplexerInstance.GetTwitchPlatformService();
+                    this.TwitchChannelManagementService = this.TwitchService?.GetChannelManagementService();
+                    this.TwitchUserStateTrackerService = this.TwitchService?.GetUserStateTrackerService();
+                }
+                else {
+                    Logger.Info("Twitch integration disabled");
+                }
                 this.WebSocketClient.OnReceivedMessage += this.OnWebsocketMessageReceived;
                 if (RequestBotConfig.Instance.EnableStreamerBot) {
+                    Logger.Info("Starting websocket client");
                     this.WebSocketClient.StartClient();
                 }
             }
@@ -108,7 +116,9 @@ namespace SongRequestManagerV2.Utils
                 if (disposing) {
                     // TODO: マネージド状態を破棄します (マネージド オブジェクト)
                     Logger.Debug("Dispose call");
-                    this.MultiplexerInstance.OnTextMessageReceived -= this.MultiplexerInstance_OnTextMessageReceived;
+                    if (this.MultiplexerInstance != null) {
+                        this.MultiplexerInstance.OnTextMessageReceived -= this.MultiplexerInstance_OnTextMessageReceived;
+                    }
                     this.WebSocketClient.OnReceivedMessage -= this.OnWebsocketMessageReceived;
                     await this.WebSocketClient.StopClient();
                 }

@@ -28,6 +28,7 @@ namespace SongRequestManagerV2.Interfaces
         event Action<bool> UpdateUIRequest;
         event Action<bool> SetButtonIntactivityRequest;
         event Action ChangeButtonColor;
+        event Action<SongRequest> AutoPlaySongRequested;
 
         string QueueMessage(bool QueueState);
         List<JSONObject> ReadJSON(string path);

@@ -42,7 +42,10 @@ namespace SongRequestManagerV2.Configuration
         public virtual bool EnableAprilFool { get; set; } = false;
         [UseConverter(typeof(EnumConverter<LinkType>))]
         public virtual LinkType LinkType { get; set; } = LinkType.All;
+        public virtual bool AutoplaySong { get; set; } = false; // Automatically play the next requested song
         public virtual bool EnableStreamerBot { get; set; } = false;
+        public virtual bool EnableTwitchIntegration { get; set; } = true;
+        public virtual string StreamerBotWebSocketHost { get; set; } = "127.0.0.1";
         public virtual int StreamerBotWebSocketPort { get; set; } = 8080;
         public virtual string StreamerBotWebSocketEndpoint { get; set; } = "/";
         public virtual string SendChatActionGUID { get; set; } = "";
@@ -57,7 +60,6 @@ namespace SongRequestManagerV2.Configuration
         public virtual string AdditionalSongPath { get; set; } = "";
         public virtual bool LocalSearch { get; set; } = false;
         public virtual bool PersistentRequestQueue { get; set; } = true;
-        public virtual bool AutoplaySong { get; set; } = false; // Pressing play will automatically attempt to play the song you selected at the highest difficulty level it has
         public virtual int MaximumLookupMessages { get; set; } = 1;
         public virtual int PPDeckMiniumumPP { get; set; } = 150; // Minimum PP to add to pp deck
         public virtual string DeckList { get; set; } = "fun hard brutal dance chill";
