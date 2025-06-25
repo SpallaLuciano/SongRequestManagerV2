@@ -88,10 +88,13 @@ All settings are automatically retrieved from ChatCore. There is no need to tamp
 | **SessionResetAfterXHours=6** | Amount of time after session ENDS before your Duplicate song list and Played list are reset.
 | **LowestAllowedRating=40** | Lowest allowed rating (as voted on [BeatSaver.com](on https://Beatsaver.com)) permitted. Unrated songs get a pass.|
 | **AutopickFirstSong=False** | If on, will simply pick the first song. Otherwise, the recommended method shows a list of possible songs that match your search. Careful use of Block and Remap will make this method more effective over time |
+| **AutoplaySong=False** | When enabled, the first song in the queue begins downloading and is selected automatically |
 | **UpdateQueueStatusFiles=True** | Enables the generation of queuestatus.txt and queuelist.txt. Use StreamOBS' Text (GDI+) option to display your queue status and list on your live stream! |
 | **MaximumQueueTextEntries=8** | How many entries are sent to the queuelist.txt file. Any entries beyond that will display a ... |
 | **BotPrefix =""** | This adds a prefix to all bot output, set it to "! " to allow filtering of all bot output by TTS or Enhanced Twitch chat. You can use other means like filtering by name to achiveve this |
 | **MixerUserName** | It works with or without.　|
+| **EnableTwitchIntegration=True** | Initialize Twitch chat via CatCore. Set to false if using only a custom websocket service. |
+| **StreamerBotWebSocketHost=127.0.0.1** | Hostname of the websocket server used for Streamer.bot or custom backends. |
 
 
 # Compiling

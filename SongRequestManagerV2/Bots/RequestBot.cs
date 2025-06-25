@@ -97,6 +97,7 @@ namespace SongRequestManagerV2.Bots
         public event Action<bool> UpdateUIRequest;
         public event Action<bool> SetButtonIntactivityRequest;
         public event Action ChangeButtonColor;
+        public event Action<SongRequest> AutoPlaySongRequested;
 
         /// <summary>SongRequest を取得、設定</summary>
         private SongRequest _currentSong;
@@ -290,10 +291,13 @@ namespace SongRequestManagerV2.Bots
             this._timer.Stop();
             try {
                 if (this.ChatManager.RequestInfos.TryDequeue(out var requestInfo)) {
-                    await this.CheckRequest(requestInfo);
+                    var added = await this.CheckRequest(requestInfo);
                     this.UpdateRequestUI();
                     this.RefreshSongQuere();
                     this.RefreshQueue = true;
+                    if (RequestBotConfig.Instance.AutoplaySong && added != null) {
+                        AutoPlaySongRequested?.Invoke(added);
+                    }
                 }
                 else if (this.ChatManager.RecieveChatMessage.TryDequeue(out var chatMessage)) {
                     this.RecievedMessages(chatMessage);
@@ -323,7 +327,10 @@ namespace SongRequestManagerV2.Bots
                 }
 
                 try {
-                    var timeSinceBackup = DateTime.Now - DateTime.Parse(RequestBotConfig.Instance.LastBackup);
+                    if (!DateTime.TryParse(RequestBotConfig.Instance.LastBackup, out var lastBackup)) {
+                        lastBackup = DateTime.MinValue;
+                    }
+                    var timeSinceBackup = DateTime.Now - lastBackup;
                     if (timeSinceBackup > TimeSpan.FromHours(RequestBotConfig.Instance.SessionResetAfterXHours)) {
                         _ = this.Backup();
                     }
@@ -432,16 +439,17 @@ namespace SongRequestManagerV2.Bots
         }
 
         // BUG: Testing major changes. This will get seriously refactored soon.
-        internal async Task CheckRequest(RequestInfo requestInfo)
+        internal async Task<SongRequest> CheckRequest(RequestInfo requestInfo)
         {
             if (requestInfo == null) {
-                return;
+                return null;
             }
 #if DEBUG
             Logger.Debug("Start CheckRequest");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 #endif
+            SongRequest req = null;
             var requestor = requestInfo.Requestor;
             var request = requestInfo.Request;
 
@@ -530,7 +538,7 @@ namespace SongRequestManagerV2.Bots
                     return;
                 }
                 var song = songs[0];
-                var req = this._songRequestFactory.Create();
+                req = this._songRequestFactory.Create();
                 req.Init(song, requestor, requestInfo.RequestTime, RequestStatus.Queued, requestInfo.RequestInfoText);
                 RequestTracker[requestor.Id].numRequests++;
                 this.ListCollectionManager.Add(s_duplicatelist, song["id"]);
@@ -570,6 +578,7 @@ namespace SongRequestManagerV2.Bots
                 Logger.Debug($"Finish CheckRequest : {stopwatch.ElapsedMilliseconds} ms");
 #endif
             }
+            return req;
         }
         public void UpdateRequestUI(bool writeSummary = true)
         {

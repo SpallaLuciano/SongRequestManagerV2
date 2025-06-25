@@ -73,6 +73,7 @@ namespace SongRequestManagerV2.Models.Streamer.bot
 
         public async Task ReConnect(int millsec = 1000)
         {
+            Logger.Info($"Reconnecting websocket in {millsec}ms");
             await this.StopClient();
             await Task.Delay(millsec);
             this.StartClient();
@@ -106,12 +107,20 @@ namespace SongRequestManagerV2.Models.Streamer.bot
             _clientWebSocket = new ClientWebSocket();
 
             //接続先エンドポイントを指定
-            var uri = new Uri($"ws://127.0.0.1:{RequestBotConfig.Instance.StreamerBotWebSocketPort}{RequestBotConfig.Instance.StreamerBotWebSocketEndpoint}");
+            var uri = new Uri($"ws://{RequestBotConfig.Instance.StreamerBotWebSocketHost}:{RequestBotConfig.Instance.StreamerBotWebSocketPort}{RequestBotConfig.Instance.StreamerBotWebSocketEndpoint}");
+            Logger.Info($"Connecting websocket: {uri}");
             _cts = new CancellationTokenSource();
-
-            //サーバに対し、接続を開始
-            await _clientWebSocket.ConnectAsync(uri, _cts.Token);
-            Logger.Info("Connected websocket");
+            try {
+                //サーバに対し、接続を開始
+                await _clientWebSocket.ConnectAsync(uri, _cts.Token);
+                Logger.Info("Connected websocket");
+            }
+            catch (Exception e) {
+                Logger.Error($"Failed to connect websocket: {e.Message}");
+                Logger.Error(e);
+                _ = this.ReConnect();
+                return;
+            }
             await _clientWebSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(SubRequestMessage)), WebSocketMessageType.Text, true, _cts.Token);
             var requestWait = true;
             var buffer = new byte[1024 * 10];
@@ -176,6 +185,7 @@ namespace SongRequestManagerV2.Models.Streamer.bot
                 }
                 this.OnReceivedMessage?.Invoke(this, message);
             }
+            Logger.Info("Websocket receive loop ended - reconnecting");
             _ = this.ReConnect();
         }
         #endregion
