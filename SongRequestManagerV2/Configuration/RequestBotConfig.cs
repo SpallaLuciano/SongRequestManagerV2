@@ -39,6 +39,8 @@ namespace SongRequestManagerV2.Configuration
         public virtual bool PerformanceMode { get; set; } = false;
         public virtual bool NotifySound { get; set; } = false;
         public virtual int SoundVolume { get; set; } = 50;
+        public virtual string DefaultDifficulty { get; set; } = "Expert";
+        public virtual bool EnableDuplicateFilter { get; set; } = true;
         public virtual bool EnableAprilFool { get; set; } = false;
         [UseConverter(typeof(EnumConverter<LinkType>))]
         public virtual LinkType LinkType { get; set; } = LinkType.All;
