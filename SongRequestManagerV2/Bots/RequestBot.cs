@@ -296,6 +296,7 @@ namespace SongRequestManagerV2.Bots
                     this.RefreshSongQuere();
                     this.RefreshQueue = true;
                     if (RequestBotConfig.Instance.AutoplaySong && added != null) {
+                        Logger.Info($"Auto play event raised for {added.ID}");
                         AutoPlaySongRequested?.Invoke(added);
                     }
                 }
@@ -554,6 +555,7 @@ namespace SongRequestManagerV2.Bots
                 else {
                     RequestManager.RequestSongs.Add(req);
                 }
+                Logger.Info($"Song queued: {req.ID} requested by {requestor.UserName}");
                 this._requestManager.WriteRequest();
 
                 this.Writedeck(requestor, "savedqueue"); // This can be used as a backup if persistent Queue is turned off.
@@ -722,6 +724,7 @@ namespace SongRequestManagerV2.Bots
 
         public string ProcessSongRequest(ParseState state)
         {
+            Logger.Info($"Received request from {state.User.UserName}: {state.Parameter}");
             try {
                 if (RequestBotConfig.Instance.RequestQueueOpen == false && !state.Flags.HasFlag(CmdFlags.NoFilter) && !state.Flags.HasFlag(CmdFlags.Local)) // BUG: Complex permission, Queue state message needs to be handled higher up
                 {
@@ -773,6 +776,7 @@ namespace SongRequestManagerV2.Bots
 
                 if (!this.ChatManager.RequestInfos.Contains(newRequest)) {
                     this.ChatManager.RequestInfos.Enqueue(newRequest);
+                    Logger.Info($"Queued request '{newRequest.Request}' from {newRequest.Requestor.UserName}");
                 }
                 return s_success;
             }
