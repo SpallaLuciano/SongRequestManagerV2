@@ -81,6 +81,7 @@ namespace SongRequestManagerV2.Bots
 
         public void WriteRequest()
         {
+            Logger.Info($"Saving queue to {requestsPath} ({RequestSongs.Count} songs)");
             this.Write(requestsPath, RequestSongs);
         }
 
