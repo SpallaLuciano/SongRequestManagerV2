@@ -231,6 +231,7 @@ namespace SongRequestManagerV2.Views
             if (fromHistory && !RequestManager.HistorySongs.Any()) {
                 return;
             }
+            Logger.Info($"Processing song {request.ID}");
             await s_downloadSemaphore.WaitAsync();
             try {
                 this._bot.PlayNow = request;
@@ -290,6 +291,7 @@ namespace SongRequestManagerV2.Views
             if (this._isInGame) {
                 return;
             }
+            Logger.Info($"Starting autoplay for {request.ID}");
             Dispatcher.RunOnMainThread(() => this.ProcessSongRequest(request, false));
         }
 
