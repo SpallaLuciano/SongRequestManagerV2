@@ -470,7 +470,7 @@ namespace SongRequestManagerV2.Bots
                     var requestcheckmessage = this.IsRequestInQueue(this.Normalize.RemoveSymbols(request, this.Normalize.SymbolsNoDash));               // Check if requested ID is in Queue  
                     if (requestcheckmessage != "") {
                         this.ChatManager.QueueChatMessage(requestcheckmessage);
-                        return;
+                        return null;
                     }
                 }
 
@@ -525,7 +525,7 @@ namespace SongRequestManagerV2.Bots
                         msg.Add(this._textFactory.Create().AddSong(eachsong).Parse(StringFormat.BsrSongDetail), ", ");
                     }
                     msg.End("...", $"No matching songs for for {request}");
-                    return;
+                    return null;
                 }
                 else {
                     errorMessage = !requestInfo.Flags.HasFlag(CmdFlags.NoFilter)
@@ -536,7 +536,7 @@ namespace SongRequestManagerV2.Bots
                 // Display reason why chosen song was rejected, if filter is triggered. Do not add filtered songs
                 if (!string.IsNullOrEmpty(errorMessage)) {
                     this.ChatManager.QueueChatMessage(errorMessage);
-                    return;
+                    return null;
                 }
                 var song = songs[0];
                 req = this._songRequestFactory.Create();
