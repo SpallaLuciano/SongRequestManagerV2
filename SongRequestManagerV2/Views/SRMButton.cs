@@ -290,7 +290,9 @@ namespace SongRequestManagerV2.Views
 
         public void PlaySongRequest(SongRequest request)
         {
+            Logger.Info($"Play song request: {request}");
             if (this._isInGame) {
+                Logger.Info("Currently in game");
                 return;
             }
             Logger.Info($"Starting autoplay for {request.ID}");

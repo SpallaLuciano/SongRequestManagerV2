@@ -298,6 +298,7 @@ namespace SongRequestManagerV2.Bots
                     this.UpdateRequestUI();
                     this.RefreshSongQuere();
                     this.RefreshQueue = true;
+                    Logger.Info($"Autoplay: {RequestBotConfig.Instance.AutoplaySong}. Song: {added}");
                     if (RequestBotConfig.Instance.AutoplaySong && added != null) {
                         Logger.Info($"Auto play event raised for {added.ID}");
                         AutoPlaySongRequested?.Invoke(added);
@@ -452,7 +453,7 @@ namespace SongRequestManagerV2.Bots
                 return null;
             }
 #if DEBUG
-            Logger.Debug("Start CheckRequest");
+            Logger.Info("Start CheckRequest");
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 #endif
@@ -463,8 +464,8 @@ namespace SongRequestManagerV2.Bots
             var normalrequest = this.Normalize.NormalizeBeatSaverString(requestInfo.Request);
 
             var id = this.GetBeatSaverId(this.Normalize.RemoveSymbols(request, this.Normalize.SymbolsNoDash));
-            Logger.Debug($"id value : {id}");
-            Logger.Debug($"normalrequest value : {normalrequest}");
+            Logger.Info($"id value : {id}");
+            Logger.Info($"normalrequest value : {normalrequest}");
             try {
                 if (!string.IsNullOrEmpty(id)) {
                     // Remap song id if entry present. This is one time, and not correct as a result. No recursion right now, could be confusing to the end user.
@@ -475,6 +476,7 @@ namespace SongRequestManagerV2.Bots
 
                     var requestcheckmessage = this.IsRequestInQueue(this.Normalize.RemoveSymbols(request, this.Normalize.SymbolsNoDash));               // Check if requested ID is in Queue  
                     if (requestcheckmessage != "") {
+                        Logger.Info("Returns null");
                         this.ChatManager.QueueChatMessage(requestcheckmessage);
                         return null;
                     }
@@ -532,6 +534,7 @@ namespace SongRequestManagerV2.Bots
                         msg.Add(this._textFactory.Create().AddSong(eachsong).Parse(StringFormat.BsrSongDetail), ", ");
                     }
                     msg.End("...", $"No matching songs for for {request}");
+                    Logger.Info("Returns null 2");
                     return null;
                 }
                 else {
@@ -549,6 +552,7 @@ namespace SongRequestManagerV2.Bots
                         Logger.Info($"Request {request} rejected: {errorMessage}");
                     }
                     this.ChatManager.QueueChatMessage(errorMessage);
+                    Logger.Info("Returns null 3");
                     return null;
                 }
                 var song = songs[0];
@@ -605,6 +609,7 @@ namespace SongRequestManagerV2.Bots
                 Dispatcher.RunOnMainThread(() =>
                 {
                     try {
+                        Logger.Info($"Invoking Change Button Color");
                         ChangeButtonColor?.Invoke();
                     }
                     catch (Exception e) {
@@ -1707,6 +1712,7 @@ namespace SongRequestManagerV2.Bots
 
             try {
                 var statusfile = Path.Combine(Plugin.DataPath, "queuelist.txt");
+                Logger.Info($"Status file: {statusfile}");
                 var queuesummary = new StringBuilder();
                 var count = 0;
 
