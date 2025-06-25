@@ -952,7 +952,7 @@ namespace SongRequestManagerV2.Bots
                 return fast ? "X" : $"{metadata["songName"].Value} by {metadata["levelAuthorName"].Value} does not have a permitted mapper!";
             }
 
-            if (filter.HasFlag(SongFilter.Duplicate) && this.ListCollectionManager.Contains(s_duplicatelist, songid)) {
+            if (RequestBotConfig.Instance.EnableDuplicateFilter && filter.HasFlag(SongFilter.Duplicate) && this.ListCollectionManager.Contains(s_duplicatelist, songid)) {
                 return fast ? "X" : $"{metadata["songName"].Value} by  {metadata["levelAuthorName"].Value} already requested this session!";
             }
 

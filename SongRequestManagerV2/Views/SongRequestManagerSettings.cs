@@ -141,6 +141,31 @@ namespace SongRequestManagerV2.Views
 
             set => RequestBotConfig.Instance.SoundVolume = value;
         }
+        [UIValue("difficulties")]
+        public List<object> Difficulties { get; } = new List<object>()
+            {
+                "Easy",
+                "Normal",
+                "Hard",
+                "Expert",
+                "ExpertPlus"
+            };
+
+        [UIValue("default-difficulty")]
+        public string DefaultDifficulty
+        {
+            get => RequestBotConfig.Instance.DefaultDifficulty;
+
+            set => RequestBotConfig.Instance.DefaultDifficulty = value;
+        }
+
+        [UIValue("enable-duplicate-filter")]
+        public bool EnableDuplicateFilter
+        {
+            get => RequestBotConfig.Instance.EnableDuplicateFilter;
+
+            set => RequestBotConfig.Instance.EnableDuplicateFilter = value;
+        }
         [UIValue("pp-sarch")]
         public bool PPSerch
         {
