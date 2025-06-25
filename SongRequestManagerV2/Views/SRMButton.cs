@@ -232,7 +232,7 @@ namespace SongRequestManagerV2.Views
                 return;
             }
             Logger.Info($"Processing song {request.ID}");
-            Logger.Debug($"Queue size at process start: {RequestManager.RequestSongs.Count}");
+            Logger.Info($"Queue size at process start: {RequestManager.RequestSongs.Count}");
             await s_downloadSemaphore.WaitAsync();
             try {
                 this._bot.PlayNow = request;
@@ -284,7 +284,7 @@ namespace SongRequestManagerV2.Views
             }
             finally {
                 _ = s_downloadSemaphore.Release();
-                Logger.Debug($"Queue size after processing: {RequestManager.RequestSongs.Count}");
+                Logger.Info($"Queue size after processing: {RequestManager.RequestSongs.Count}");
             }
         }
 
@@ -294,7 +294,7 @@ namespace SongRequestManagerV2.Views
                 return;
             }
             Logger.Info($"Starting autoplay for {request.ID}");
-            Logger.Debug($"Queue size before play: {RequestManager.RequestSongs.Count}");
+            Logger.Info($"Queue size before play: {RequestManager.RequestSongs.Count}");
             Dispatcher.RunOnMainThread(() => this.ProcessSongRequest(request, false));
         }
 
