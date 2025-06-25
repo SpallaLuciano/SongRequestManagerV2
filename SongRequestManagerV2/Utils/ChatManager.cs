@@ -82,7 +82,7 @@ namespace SongRequestManagerV2.Utils
         public void QueueChatMessage(string message)
         {
             this.SendMessageQueue.Enqueue($"{RequestBotConfig.Instance.BotPrefix}{message}");
-            Logger.Debug($"Queued chat message: {message}");
+            Logger.Info($"Queued chat message: {message}");
         }
 
         //private void MultiplexerInstance_OnTextMessageReceived(IChatService arg1, IChatMessage arg2)
