@@ -6,6 +6,7 @@ using SongRequestManagerV2.Bots;
 using SongRequestManagerV2.Configuration;
 using SongRequestManagerV2.Interfaces;
 using SongRequestManagerV2.Models.Streamer.bot;
+using SongRequestManagerV2.SimpleJsons;
 using System;
 using System.Collections.Concurrent;
 using Zenject;
@@ -150,6 +151,16 @@ namespace SongRequestManagerV2.Utils
             foreach (var json in jsons) {
                 _ = this.WebSocketClient?.SendAsync(json.ToString());
             }
+        }
+
+        public void SendEventToStreamerbotServer(string type, JSONObject data)
+        {
+            var json = new JSONObject();
+            json["event"] = type;
+            if (data != null) {
+                json.Add("data", data);
+            }
+            _ = this.WebSocketClient?.SendAsync(json.ToString());
         }
     }
 }

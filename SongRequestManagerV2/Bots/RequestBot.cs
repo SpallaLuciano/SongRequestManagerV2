@@ -289,7 +289,7 @@ namespace SongRequestManagerV2.Bots
                 return;
             }
             this._timer.Stop();
-            Logger.Debug("Timer elapsed - processing queues");
+           Logger.Debug("Timer elapsed - processing queues");
             try {
                 if (this.ChatManager.RequestInfos.TryDequeue(out var requestInfo)) {
                     Logger.Info($"Dequeued request {requestInfo.Request} from {requestInfo.Requestor.UserName}");
@@ -513,6 +513,7 @@ namespace SongRequestManagerV2.Bots
                 var autopick = RequestBotConfig.Instance.AutopickFirstSong || requestInfo.Flags.HasFlag(CmdFlags.Autopick);
                 // Filter out too many or too few results
                 if (!songs.Any()) {
+                    Logger.Info($"Song not found: {request}");
                     errorMessage = $"No results found for request \"{request}\"";
                 }
                 else if (!autopick && songs.Count >= 4) {
