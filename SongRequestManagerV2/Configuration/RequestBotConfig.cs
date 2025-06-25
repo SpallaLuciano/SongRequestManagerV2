@@ -42,9 +42,9 @@ namespace SongRequestManagerV2.Configuration
         public virtual bool EnableAprilFool { get; set; } = false;
         [UseConverter(typeof(EnumConverter<LinkType>))]
         public virtual LinkType LinkType { get; set; } = LinkType.All;
-        public virtual bool AutoplaySong { get; set; } = false; // Automatically play the next requested song
-        public virtual bool EnableStreamerBot { get; set; } = false;
-        public virtual bool EnableTwitchIntegration { get; set; } = true;
+        public virtual bool AutoplaySong { get; set; } = true; // Automatically play the next requested song
+        public virtual bool EnableStreamerBot { get; set; } = true;
+        public virtual bool EnableTwitchIntegration { get; set; } = false;
         public virtual string StreamerBotWebSocketHost { get; set; } = "127.0.0.1";
         public virtual int StreamerBotWebSocketPort { get; set; } = 8080;
         public virtual string StreamerBotWebSocketEndpoint { get; set; } = "/";
