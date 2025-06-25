@@ -507,6 +507,7 @@ namespace SongRequestManagerV2.Bots
                 var autopick = RequestBotConfig.Instance.AutopickFirstSong || requestInfo.Flags.HasFlag(CmdFlags.Autopick);
                 // Filter out too many or too few results
                 if (!songs.Any()) {
+                    Logger.Info($"Song not found: {request}");
                     errorMessage = $"No results found for request \"{request}\"";
                 }
                 else if (!autopick && songs.Count >= 4) {
