@@ -4,6 +4,7 @@ using CatCore.Services.Multiplexer;
 using CatCore.Services.Twitch.Interfaces;
 using SongRequestManagerV2.Bots;
 using SongRequestManagerV2.Models.Streamer.bot;
+using SongRequestManagerV2.SimpleJsons;
 using System.Collections.Concurrent;
 
 namespace SongRequestManagerV2.Interfaces
@@ -24,5 +25,6 @@ namespace SongRequestManagerV2.Interfaces
 
         void QueueChatMessage(string message);
         void SendMessageToStreamerbotServer(string message);
+        void SendEventToStreamerbotServer(string type, JSONObject data);
     }
 }
