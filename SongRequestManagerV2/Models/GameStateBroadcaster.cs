@@ -2,7 +2,6 @@ using SongRequestManagerV2.Interfaces;
 using SongRequestManagerV2.SimpleJsons;
 using System;
 using Zenject;
-using GlobalNamespace;
 
 namespace SongRequestManagerV2.Models
 {
@@ -34,9 +33,9 @@ namespace SongRequestManagerV2.Models
             SendStartEvent();
             if (_scoreController != null)
             {
-                _scoreController.scoreDidChangeEvent += OnScoreChanged;
+                this._scoreController.scoreDidChangeEvent += OnScoreChanged;
             }
-            if (_transition != null)
+            if (this._transition != null)
             {
                 _transition.didFinishEvent += OnLevelFinished;
             }
@@ -52,10 +51,11 @@ namespace SongRequestManagerV2.Models
             _chatManager.SendEventToStreamerbotServer("GameStarted", data);
         }
 
-        private void OnScoreChanged(int score)
+        private void OnScoreChanged(int multiplier, int modifiedScore)
         {
             var data = CreateSongData();
-            data["score"] = score;
+            data["modifiedScore"] = modifiedScore;
+            data["multiplier"] = multiplier;
             _chatManager.SendEventToStreamerbotServer("ScoreChanged", data);
         }
 
@@ -86,7 +86,7 @@ namespace SongRequestManagerV2.Models
             else
             {
                 json["id"] = _sceneData.beatmapKey.levelId;
-                json["name"] = _sceneData.previewBeatmapLevel.songName;
+                json["name"] = _sceneData.beatmapLevel.songName;
             }
             return json;
         }
@@ -97,7 +97,7 @@ namespace SongRequestManagerV2.Models
             {
                 _scoreController.scoreDidChangeEvent -= OnScoreChanged;
             }
-            if (_transition != null)
+            if (this._transition != null)
             {
                 _transition.didFinishEvent -= OnLevelFinished;
             }
