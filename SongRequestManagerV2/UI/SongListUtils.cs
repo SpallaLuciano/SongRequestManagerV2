@@ -51,7 +51,12 @@ namespace SongRequestManagerV2.UI
 
                 var updateCustomSongsMethod = typeof(LevelFilteringNavigationController)
                     .GetMethod("UpdateCustomSongs", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-                _ = updateCustomSongsMethod?.Invoke(this._levelFilteringNavigationController, new object[0]);
+                try {
+                    _ = updateCustomSongsMethod?.Invoke(this._levelFilteringNavigationController, new object[0]);
+                }
+                catch (TargetInvocationException e) when (e.InnerException is ArgumentOutOfRangeException) {
+                    Logger.Debug("UpdateCustomSongs failed due to invalid category");
+                }
 
                 yield return new WaitWhile(() => this._levelFilteringNavigationController.GetField<CancellationTokenSource, LevelFilteringNavigationController>("_cancellationTokenSource") != null);
                 var gridView = this._annotatedBeatmapLevelCollectionsViewController.GetField<AnnotatedBeatmapLevelCollectionsGridView, AnnotatedBeatmapLevelCollectionsViewController>("_annotatedBeatmapLevelCollectionsGridView");
@@ -78,8 +83,15 @@ namespace SongRequestManagerV2.UI
                 var levelsTableView = this._levelCollectionViewController.GetField<LevelCollectionTableView, LevelCollectionViewController>("_levelCollectionTableView");
                 levelsTableView.SelectLevel(song);
 
-                var detailViewController = this._levelCollectionViewController
-                    .GetField<StandardLevelDetailViewController, LevelCollectionViewController>("_levelDetailViewController");
+                StandardLevelDetailViewController detailViewController = null;
+                try {
+                    detailViewController = this._levelCollectionViewController.GetField<StandardLevelDetailViewController, LevelCollectionViewController>("_levelDetailViewController");
+                }
+                catch (MissingFieldException) {
+                    var propertyInfo = typeof(LevelCollectionViewController).GetProperty("levelDetailViewController", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    detailViewController = propertyInfo?.GetValue(this._levelCollectionViewController) as StandardLevelDetailViewController;
+                }
+
                 if (detailViewController != null) {
                     var diffControl = detailViewController.GetField<object, StandardLevelDetailViewController>("_beatmapDifficultySegmentedControl");
                     if (diffControl != null && Enum.TryParse(RequestBotConfig.Instance.DefaultDifficulty, out BeatmapDifficulty diff)) {
