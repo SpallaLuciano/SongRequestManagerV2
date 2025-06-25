@@ -289,7 +289,7 @@ namespace SongRequestManagerV2.Bots
                 return;
             }
             this._timer.Stop();
-            Logger.Info("Timer elapsed - processing queues");
+           Logger.Debug("Timer elapsed - processing queues");
             try {
                 if (this.ChatManager.RequestInfos.TryDequeue(out var requestInfo)) {
                     Logger.Info($"Dequeued request {requestInfo.Request} from {requestInfo.Requestor.UserName}");
@@ -542,6 +542,12 @@ namespace SongRequestManagerV2.Bots
 
                 // Display reason why chosen song was rejected, if filter is triggered. Do not add filtered songs
                 if (!string.IsNullOrEmpty(errorMessage)) {
+                    if (errorMessage.StartsWith("No results")) {
+                        Logger.Info($"Song not found: {request}");
+                    }
+                    else {
+                        Logger.Info($"Request {request} rejected: {errorMessage}");
+                    }
                     this.ChatManager.QueueChatMessage(errorMessage);
                     return null;
                 }
