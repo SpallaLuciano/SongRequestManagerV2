@@ -202,7 +202,7 @@ namespace SongRequestManagerV2.Models.Streamer.bot
             "    \"Twitch\": [" +
             "      \"ChatMessage\"" +
             "    ]" +
-            "  }," +
+            "  }" +
             "}";
         private bool _disposedValue;
         private Task _wokerThread;
