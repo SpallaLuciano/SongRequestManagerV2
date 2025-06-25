@@ -39,7 +39,10 @@ namespace SongRequestManagerV2.UI
         {
             if (this._levelCollectionViewController) {
                 // Make sure our custom songpack is selected
-                this.SelectCustomSongPack(1);
+                // Index 2 corresponds to the "Custom Levels" tab in newer game versions
+                // Using index 1 would select the "Favorites" tab and trigger an
+                // ArgumentOutOfRangeException in UpdateCustomSongs
+                this.SelectCustomSongPack(2);
 
                 var method = typeof(LevelFilteringNavigationController).GetMethod("UpdateCustomSongs", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
                 _ = method.Invoke(this._levelFilteringNavigationController, new object[0]);

@@ -289,9 +289,12 @@ namespace SongRequestManagerV2.Bots
                 return;
             }
             this._timer.Stop();
+            Logger.Debug("Timer elapsed - processing queues");
             try {
                 if (this.ChatManager.RequestInfos.TryDequeue(out var requestInfo)) {
+                    Logger.Debug($"Dequeued request {requestInfo.Request} from {requestInfo.Requestor.UserName}");
                     var added = await this.CheckRequest(requestInfo);
+                    Logger.Debug($"Queue size after CheckRequest: {RequestManager.RequestSongs.Count}");
                     this.UpdateRequestUI();
                     this.RefreshSongQuere();
                     this.RefreshQueue = true;
@@ -301,12 +304,15 @@ namespace SongRequestManagerV2.Bots
                     }
                 }
                 else if (this.ChatManager.RecieveChatMessage.TryDequeue(out var chatMessage)) {
+                    Logger.Debug("Processing chat message");
                     this.RecievedMessages(chatMessage);
                 }
                 else if (this.ChatManager.RecieveGenelicChatMessage.TryDequeue(out var genelicChatMessage)) {
+                    Logger.Debug("Processing generic chat message");
                     this.RecievedMessages(genelicChatMessage);
                 }
                 else if (this.ChatManager.SendMessageQueue.TryDequeue(out var message)) {
+                    Logger.Debug("Sending queued message");
                     this.SendChatMessage(message);
                 }
             }
@@ -556,6 +562,7 @@ namespace SongRequestManagerV2.Bots
                     RequestManager.RequestSongs.Add(req);
                 }
                 Logger.Info($"Song queued: {req.ID} requested by {requestor.UserName}");
+                Logger.Debug($"Queue size is now {RequestManager.RequestSongs.Count}");
                 this._requestManager.WriteRequest();
 
                 this.Writedeck(requestor, "savedqueue"); // This can be used as a backup if persistent Queue is turned off.
@@ -615,6 +622,7 @@ namespace SongRequestManagerV2.Bots
         public void DequeueRequest(SongRequest request, bool updateUI = true)
         {
             try {
+                Logger.Debug($"Dequeueing request {request.ID} - queue size before: {RequestManager.RequestSongs.Count}");
                 // Wrong song requests are not logged into history, is it possible that other status states shouldn't be moved either?
                 if ((request.Status & (RequestStatus.Wrongsong | RequestStatus.SongSearch)) == 0) {
                     var reqs = new List<SongRequest>() { request };
@@ -643,6 +651,7 @@ namespace SongRequestManagerV2.Bots
                         RequestTracker[request.Requestor.Id].numRequests--;
                     }
                 }
+                Logger.Debug($"Queue size after dequeue: {RequestManager.RequestSongs.Count}");
             }
             catch (Exception e) {
                 Logger.Error(e);
@@ -777,6 +786,7 @@ namespace SongRequestManagerV2.Bots
                 if (!this.ChatManager.RequestInfos.Contains(newRequest)) {
                     this.ChatManager.RequestInfos.Enqueue(newRequest);
                     Logger.Info($"Queued request '{newRequest.Request}' from {newRequest.Requestor.UserName}");
+                    Logger.Debug($"Pending request count: {this.ChatManager.RequestInfos.Count}");
                 }
                 return s_success;
             }
@@ -1703,6 +1713,7 @@ namespace SongRequestManagerV2.Bots
                     }
                 }
                 File.WriteAllText(statusfile, count > 0 ? queuesummary.ToString() : "Queue is empty.");
+                Logger.Debug($"Wrote queue summary to {statusfile}");
             }
             catch (Exception ex) {
                 Logger.Error(ex);
@@ -1714,6 +1725,7 @@ namespace SongRequestManagerV2.Bots
             try {
                 var statusfile = Path.Combine(Plugin.DataPath, "queuestatus.txt");
                 File.WriteAllText(statusfile, status);
+                Logger.Debug($"Wrote queue status to {statusfile}: {status}");
             }
 
             catch (Exception ex) {
